@@ -19,10 +19,6 @@ This project moves beyond simple CRUD, featuring advanced search capabilities vi
 
 The infrastructure is designed for scalability and resilience, utilizing a microservices-based approach with Docker and Kubernetes.
 
-### High-Level Flow
-![Architecture Diagram](./assets/architecture-diagram.png)
-*(Note: Insert the architecture image generated earlier here)*
-
 **Infrastructure Highlights:**
 * **Compute:** Amazon EKS (Managed Kubernetes) with Horizontal Pod Autoscaling (HPA).
 * **CDN & Caching:** Amazon CloudFront serving static assets from S3 with Route 53 DNS resolution.
@@ -81,7 +77,7 @@ Run the application locally without Kubernetes for rapid development.
 ```bash
 # Clone the repo
 git clone [https://github.com/Aayushsoni09/Advaitam.git]
-
+```
 # Start services
 docker-compose up --build
 
@@ -91,7 +87,7 @@ Provision the VPC, EKS Cluster, and Networking layers.
 cd terraform/
 terraform init
 terraform apply --auto-approve
-
+```
 ### 3. Deployment to AWS EKS
 ```bash
 # Update kubeconfig
@@ -99,7 +95,7 @@ aws eks update-kubeconfig --region us-east-1 --name ecommerce-cluster
 
 # Apply K8s Manifests
 kubectl apply -f k8s/
-
+```
 ## 📈 Future Improvements
 - Implement Redis for caching user sessions and API response caching.
 
