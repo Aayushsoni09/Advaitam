@@ -1,4 +1,9 @@
+import { useCart } from "../context/CartContext";
+
 const ProductCard = ({ product }) => {
+
+    const { addToCart } = useCart();
+
   return (
     <div
                     key={product.id}
@@ -27,7 +32,8 @@ const ProductCard = ({ product }) => {
                         ₹{product.price}
                       </span>
 
-                      <button className="px-3 py-1 text-sm bg-zinc-600 text-white rounded-lg hover:bg-zinc-700 transition">
+                      <button onClick={() => addToCart(product)}
+                      className="px-3 py-1 text-sm bg-zinc-600 text-white rounded-lg hover:bg-zinc-700 transition">
                         Add to Cart
                       </button>
                     </div>
