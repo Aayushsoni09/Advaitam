@@ -5,7 +5,7 @@ const axios = require("axios");
 const mongoose = require('mongoose');
 
 const app = express();
-const API = "https://fakestoreapi.com";
+const API = "https://api.escuelajs.co/api/v1";
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
