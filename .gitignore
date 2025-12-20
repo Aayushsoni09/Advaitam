@@ -27,3 +27,9 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
