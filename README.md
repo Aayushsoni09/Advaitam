@@ -1,4 +1,5 @@
-<img width="2816" height="1536" alt="Gemini_Generated_Image_kalt2mkalt2mkalt" src="https://github.com/user-attachments/assets/376f9267-eb22-4a40-a377-c0f081bfe50d" />
+<img width="2816" height="1536" alt="Gemini_Generated_Image_f6tuoyf6tuoyf6tu" src="https://github.com/user-attachments/assets/8fa6b9fa-6585-46fb-a62f-588bd6a12981" />
+
 
 
 # 🚀 Enterprise Cloud-Native E-Commerce Platform
