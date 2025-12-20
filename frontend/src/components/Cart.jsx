@@ -5,6 +5,20 @@ export default function Cart() {
   const { cart, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
 
+  const handleBuyNow = async () => {
+    const res = await fetch("http://localhost:5000/api/orders/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: cart }),
+    });
+
+    const data = await res.json();
+
+    if (data.paymentUrl) {
+      window.location.href = data.paymentUrl;
+    }
+  };
+
   const total = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -81,7 +95,7 @@ export default function Cart() {
 
             {/* BUY NOW */}
             <button
-              onClick={() => alert("Proceeding to payment")}
+              onClick={handleBuyNow}
               className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
             >
               Buy Now
