@@ -1,4 +1,5 @@
-<img width="2816" height="1504" alt="Gemini_Generated_Image_atbn0katbn0katbn" src="https://github.com/user-attachments/assets/b390972a-6cc7-4b5e-9b3c-bfac4b9acbcb" />
+
+<img width="2816" height="1504" alt="advaitam-architecture" src="https://github.com/user-attachments/assets/5ea9f578-daf7-4b4d-9475-766f3c4e93e5" />
 
 
 # 🚀 Enterprise Cloud-Native E-Commerce Platform
