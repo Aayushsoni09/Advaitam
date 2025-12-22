@@ -6,7 +6,7 @@ export default function Cart() {
   const navigate = useNavigate();
 
   const handleBuyNow = async () => {
-    const res = await fetch("http://localhost:5000/api/orders/create", {
+    const res = await fetch("/api/orders/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items: cart }),

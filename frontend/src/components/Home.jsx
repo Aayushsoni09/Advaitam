@@ -1,9 +1,9 @@
-import axios from 'axios';
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import ProductCard from './ProductCard';
-
+import api from '../api/client';
 const Home = () => {
     const [products, setProducts] = useState([]);
       const [error, setError] = useState(null);
@@ -11,8 +11,8 @@ const Home = () => {
       const { cart } = useCart();
 
       useEffect(() => {
-        axios
-          .get('http://localhost:5000/api/products')
+        api
+          .get('/api/products')
           .then((res) => setProducts(res.data))
           .catch((err) => {
             console.error(err);
