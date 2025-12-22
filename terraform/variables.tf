@@ -1,17 +1,19 @@
-variable "aws_region" {
-  default = "ap-south-1" 
-}
 
 variable "project_name" {
-  default = "advaitam"
+  description = "The project name"
+  type        = string
+}
+variable "domain_name" {
+  description = "The domain name for website"
+  type        = string
 }
 
-variable "domain_name" {
-  default = "advaitam.monkweb.tech"
+variable "aws_region" {
+  description = "The AWS region"
+  type        = string
 }
 
 variable "acm_certificate_arn" {
   description = "The ARN of your EXISTING ACM certificate"
   type        = string
-  # You will paste your ARN in a terraform.tfvars file or command line
 }

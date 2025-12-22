@@ -35,6 +35,19 @@ resource "aws_cloudfront_distribution" "cdn" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
 
+  origin {
+  domain_name = var.alb_dns_name   # output from ALB module
+  origin_id   = "alb-backend"
+
+  custom_origin_config {
+    http_port              = 80
+    https_port             = 443
+    origin_protocol_policy = "http-only"
+    origin_ssl_protocols   = ["TLSv1.2"]
+  }
+}
+
+
   # Attach Custom Domain & Certificate
   aliases = [var.domain_name]
 
@@ -61,6 +74,38 @@ resource "aws_cloudfront_distribution" "cdn" {
     default_ttl            = 3600
     max_ttl                = 86400
   }
+
+  ordered_cache_behavior {
+  path_pattern           = "/api/*"
+  target_origin_id       = "alb-backend"
+  viewer_protocol_policy = "redirect-to-https"
+
+  allowed_methods = [
+    "GET",
+    "HEAD",
+    "OPTIONS",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE"
+  ]
+
+  cached_methods = ["GET", "HEAD"]
+
+  forwarded_values {
+    query_string = true
+    headers      = ["Authorization", "Content-Type"]
+
+    cookies {
+      forward = "all"
+    }
+  }
+//ttl are set to 0 because 1.APIs should not be cached 2. We want fresh responses 3. Redis handles caching, not CloudFront
+
+  min_ttl     = 0 
+  default_ttl = 0
+  max_ttl     = 0
+}
 
   restrictions {
     geo_restriction {
