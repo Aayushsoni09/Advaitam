@@ -1,0 +1,45 @@
+name: Backend Build & Push
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "backend/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::381491835701:role/backend-ci-role
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t advaitam-backend:latest .
+
+      - name: Tag image
+        run: |
+          docker tag advaitam-backend:latest \
+          381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
+
+      - name: Push image to ECR
+        run: |
+          docker push 381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
