@@ -78,6 +78,7 @@ resource "aws_instance" "app_server" {
 
   tags = {
     Name = "${var.project_name}-ec2"
+    Role = "backend"
   }
 }
 resource "aws_iam_instance_profile" "ec2_profile" {

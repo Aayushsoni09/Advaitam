@@ -20,6 +20,9 @@ aws ecr get-login-password --region ap-south-1 \
 # 5. Pull backend image
 docker pull 381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
 
+docker stop advaitam-backend || true
+docker rm advaitam-backend || true
+
 # 6. Run backend container
 docker run -d \
   --name advaitam-backend \
@@ -28,3 +31,7 @@ docker run -d \
   -e PORT=5000 \
   -e FRONTEND_URL=https://advaitam.monkweb.tech \
   381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
+# Enable SSM Agent
+systemctl enable amazon-ssm-agent
+systemctl start amazon-ssm-agent
+
