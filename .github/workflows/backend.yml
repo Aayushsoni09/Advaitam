@@ -33,13 +33,13 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t advaitam-backend:${{ github.sha }} .
+          docker build -t advaitam-backend:latest .
 
       - name: Tag image
         run: |
-          docker tag advaitam-backend:${{ github.sha }} \
-          381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:${{ github.sha }}
+          docker tag advaitam-backend:latest \
+          381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
 
       - name: Push image to ECR
         run: |
-          docker push 381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:${{ github.sha }}
+          docker push 381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
