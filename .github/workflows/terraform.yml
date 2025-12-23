@@ -59,4 +59,4 @@ jobs:
 
       - name: Terraform Destroy (MANUAL ONLY)
         if: github.event.inputs.action == 'destroy'
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -input=false
