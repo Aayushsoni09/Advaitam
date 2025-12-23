@@ -88,3 +88,8 @@ resource "aws_lb_target_group_attachment" "backend_attach" {
 output "api_endpoint" {
   value = "https://${module.alb.alb_dns_name}"
 }
+module "ecr" {
+  source       = "./modules/ecr"
+  project_name = var.project_name
+  environment  = var.environment
+}

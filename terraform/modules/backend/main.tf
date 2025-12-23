@@ -72,7 +72,7 @@ resource "aws_instance" "app_server" {
   key_name               = aws_key_pair.kp.key_name
   subnet_id              = var.subnet_id
   vpc_security_group_ids = [aws_security_group.backend_sg.id]
-  
+  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
   # Attach the startup script
   user_data = file("${path.module}/user_data.sh")
 
@@ -80,3 +80,26 @@ resource "aws_instance" "app_server" {
     Name = "${var.project_name}-ec2"
   }
 }
+resource "aws_iam_instance_profile" "ec2_profile" {
+  name = "${var.project_name}-ec2-profile"
+  role = aws_iam_role.ec2_role.name
+}
+
+resource "aws_iam_role" "ec2_role" {
+  name = "${var.project_name}-ec2-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "ec2.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecr_read" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+

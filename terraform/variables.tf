@@ -17,3 +17,7 @@ variable "acm_certificate_arn" {
   description = "The ARN of your EXISTING ACM certificate"
   type        = string
 }
+variable "environment" {
+  type    = string
+  default = "prod"
+}
