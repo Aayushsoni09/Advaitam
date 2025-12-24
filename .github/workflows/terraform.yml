@@ -1,5 +1,4 @@
 name: Terraform Infra
-
 on:
   push:
     branches: [ main ]
@@ -28,6 +27,14 @@ jobs:
       run:
         working-directory: terraform
 
+    env:
+      TF_VAR_project_name: ${{ secrets.PROJECT_NAME }}
+      TF_VAR_domain_name:  ${{ secrets.DOMAIN_NAME }}
+      TF_VAR_aws_region:   ${{ secrets.AWS_REGION }}
+      TF_VAR_acm_certificate_arn: ${{ secrets.ACM_CERTIFICATE_ARN }}
+      AWS_MAX_ATTEMPTS: 10
+      AWS_RETRY_MODE: adaptive
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,27 +58,15 @@ jobs:
 
       - name: Terraform Plan
         if: github.event_name == 'push' || github.event.inputs.action == 'apply'
-        run: terraform plan
+        run: terraform plan -input=false
 
       - name: Terraform Apply
         if: github.event_name == 'push' || github.event.inputs.action == 'apply'
-        run: terraform apply -auto-approve
-        working-directory: terraform
-        env:
-          TF_VAR_project_name: ${{ secrets.PROJECT_NAME }}
-          TF_VAR_domain_name:  ${{ secrets.DOMAIN_NAME }}
-          TF_VAR_aws_region:   ${{ secrets.AWS_REGION }}
-          TF_VAR_acm_certificate_arn: ${{ secrets.ACM_CERTIFICATE_ARN }}
+        run: terraform apply -auto-approve -input=false
 
       - name: Terraform Destroy (MANUAL ONLY)
         if: github.event.inputs.action == 'destroy'
         run: terraform destroy -auto-approve -input=false
-        working-directory: terraform
-        env:
-          TF_VAR_project_name: ${{ secrets.PROJECT_NAME }}
-          TF_VAR_domain_name:  ${{ secrets.DOMAIN_NAME }}
-          TF_VAR_aws_region:   ${{ secrets.AWS_REGION }}
-          TF_VAR_acm_certificate_arn: ${{ secrets.ACM_CERTIFICATE_ARN }}
 
       - name: Upload errored state
         if: failure()
@@ -79,4 +74,3 @@ jobs:
         with:
           name: errored-tfstate
           path: terraform/errored.tfstate
-    
