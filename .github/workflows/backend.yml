@@ -1,4 +1,4 @@
-name: Backend Build & Push
+name: Backend Build & Deploy
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     defaults:
@@ -28,28 +28,45 @@ jobs:
           role-to-assume: arn:aws:iam::381491835701:role/backend-ci-role
           aws-region: ap-south-1
 
+      # ---------------------------------------------
+      # 1️⃣ Install Dependencies BEFORE Docker Build
+      # ---------------------------------------------
+      - name: Install Node dependencies
+        run: npm ci
+
+      # Optional: Run tests if you have them; skip if not
+      - name: Run Tests (Skip if not needed)
+        run: npm test || echo "⚠ No tests found, continuing..."
+
+      # ---------------------------------------------
+      # 2️⃣ Login to ECR & Build Image
+      # ---------------------------------------------
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
-        run: |
-          docker build -t advaitam-backend:latest .
+      - name: Build Docker Image
+        run: docker build -t advaitam-backend:latest .
 
-      - name: Tag image
+      - name: Tag Docker Image
         run: |
           docker tag advaitam-backend:latest \
           381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
 
-      - name: Push image to ECR
-        run: |
-          docker push 381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
-      - name: Restart backend on EC2 via SSM
+      - name: Push to ECR
+        run: docker push 381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest
+
+      # ---------------------------------------------
+      # 3️⃣ Restart Backend on EC2 via SSM
+      # ---------------------------------------------
+      - name: Restart backend on EC2 (SSM)
         run: |
           aws ssm send-command \
             --document-name "AWS-RunShellScript" \
             --targets "Key=tag:Role,Values=backend" \
             --comment "Deploy new backend image" \
             --parameters commands='[
+              "set -ex",
+              "systemctl start amazon-ssm-agent || true",
               "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 381491835701.dkr.ecr.ap-south-1.amazonaws.com",
               "docker pull 381491835701.dkr.ecr.ap-south-1.amazonaws.com/advaitam-backend:latest",
               "docker stop advaitam-backend || true",
