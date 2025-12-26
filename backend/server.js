@@ -5,15 +5,12 @@ const axios = require("axios");
 const mongoose = require('mongoose');
 const orderRoutes = require("./routes/order.routes.js");
 const products = require("./routes/product.routes.js");
-const cors = require("cors");
-const compression = require("compression");
 
 const app = express();
 const API = "https://api.escuelajs.co/api/v1";
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(compression());
 app.use(express.json());
 app.use("/api/orders", orderRoutes);
 
