@@ -17,3 +17,7 @@ variable "subnet_id" {
   description = "The specific subnet to deploy the EC2 instance in"
   type        = string
 }
+variable "account_id"{
+  description = "The AWS Account ID"
+  type        = string
+}

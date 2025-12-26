@@ -65,6 +65,32 @@ resource "local_file" "ssh_key" {
   file_permission = "0400"
 }
 
+# DynamoDB policy
+
+resource "aws_iam_policy" "dynamodb_access" {
+  name        = "${var.project_name}-dynamodb-access"
+  description = "Allow EC2 to read/write Products table in DynamoDB"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:Query",
+          "dynamodb:Scan",
+          "dynamodb:UpdateItem",
+          "dynamodb:BatchWriteItem"
+        ],
+        Resource = "arn:aws:dynamodb:ap-south-1:${var.account_id}:table/Products"
+      }
+    ]
+  })
+}
+
+
 # --- 3. EC2 INSTANCE ---
 resource "aws_instance" "app_server" {
   ami           = "ami-00ca570c1b6d79f36" 
@@ -105,3 +131,7 @@ resource "aws_iam_role_policy_attachment" "ecr_read" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role_policy_attachment" "dynamodb_policy_attach" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = aws_iam_policy.dynamodb_access.arn
+}

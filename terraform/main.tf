@@ -59,6 +59,7 @@ module "backend" {
   my_ip        = "103.185.243.206/32" 
   alb_security_group_id = module.alb.security_group_id
   subnet_id             = data.aws_subnets.vpc_subnets.ids[0]
+  account_id = var.account_id
 }
 # DATA MODULE (Redis + OpenSearch)
 module "data" {
