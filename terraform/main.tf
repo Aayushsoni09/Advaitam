@@ -56,7 +56,7 @@ module "backend" {
   source       = "./modules/backend"
   project_name = var.project_name
   vpc_id       = data.aws_vpc.default.id
-  my_ip        = "103.185.243.206/32" 
+  my_ip        = "103.185.243.146/32" 
   alb_security_group_id = module.alb.security_group_id
   subnet_id             = data.aws_subnets.vpc_subnets.ids[0]
   account_id = var.account_id
