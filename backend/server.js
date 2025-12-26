@@ -22,7 +22,7 @@ app.use("/api/orders", orderRoutes);
 //   .then(() => console.log('MongoDB Connected'))
 //   .catch(err => console.error('MongoDB Connection Error:', err));
 
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Backend is running smoothly' });
 });
 
