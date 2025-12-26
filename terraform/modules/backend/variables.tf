@@ -21,3 +21,10 @@ variable "account_id"{
   description = "The AWS Account ID"
   type        = string
 }
+variable "opensearch_endpoint" {
+  description = "OpenSearch endpoint URL"
+}
+
+variable "index_name" {
+  default = "products"
+}

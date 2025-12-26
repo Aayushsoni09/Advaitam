@@ -135,3 +135,92 @@ resource "aws_iam_role_policy_attachment" "dynamodb_policy_attach" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = aws_iam_policy.dynamodb_access.arn
 }
+
+# Lambda + IAM + DynamoDB Stream Trigger
+
+resource "aws_iam_role" "lambda_role" {
+  name = "${var.project_name}-dynamodb-sync-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_policy" "lambda_policy" {
+  name        = "${var.project_name}-ddb-opensearch-sync-policy"
+  description = "Allows Lambda to read DynamoDB Streams + write to OpenSearch"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:DescribeStream",
+          "dynamodb:GetRecords",
+          "dynamodb:GetShardIterator",
+          "dynamodb:ListStreams"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "es:ESHttpGet",
+          "es:ESHttpPut",
+          "es:ESHttpPost"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.lambda_policy.arn
+}
+
+# ZIP the Lambda code automatically
+data "archive_file" "lambda_zip" {
+  type        = "zip"
+  source_file = "${path.module}/lambda/dynamodb-to-opensearch-sync.js"
+  output_path = "${path.module}/lambda/dynamodb-to-opensearch-sync.zip"
+}
+
+resource "aws_lambda_function" "ddb_to_opensearch" {
+  function_name = "${var.project_name}-ddb-sync-lambda"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "dynamodb-to-opensearch-sync.handler"
+  runtime       = "nodejs20.x"
+  filename      = data.archive_file.lambda_zip.output_path
+
+  environment {
+    variables = {
+      OPENSEARCH_ENDPOINT = var.opensearch_endpoint
+      INDEX_NAME          = var.index_name
+    }
+  }
+}
+
+# DynamoDB Stream Trigger
+resource "aws_lambda_event_source_mapping" "ddb_trigger" {
+  event_source_arn  = aws_dynamodb_table.products.stream_arn
+  function_name     = aws_lambda_function.ddb_to_opensearch.arn
+  starting_position = "LATEST"
+  batch_size        = 100
+}
