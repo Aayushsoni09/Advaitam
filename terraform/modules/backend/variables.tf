@@ -23,8 +23,13 @@ variable "account_id"{
 }
 variable "opensearch_endpoint" {
   description = "OpenSearch endpoint URL"
+  default = ""
 }
 
 variable "index_name" {
-  default = "products"
+  type    = string
+  default = "products-index"
+}
+variable "dynamodb_table_name" {
+  type = string
 }

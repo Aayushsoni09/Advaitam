@@ -60,6 +60,9 @@ module "backend" {
   alb_security_group_id = module.alb.security_group_id
   subnet_id             = data.aws_subnets.vpc_subnets.ids[0]
   account_id = var.account_id
+  dynamodb_table_name = "Products"   # Existing table in console
+  opensearch_endpoint = ""           # If not configured yet
+  index_name          = "products-index"
 }
 # DATA MODULE (Redis + OpenSearch)
 module "data" {

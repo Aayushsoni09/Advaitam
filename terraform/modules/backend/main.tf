@@ -211,15 +211,19 @@ resource "aws_lambda_function" "ddb_to_opensearch" {
 
   environment {
     variables = {
-      OPENSEARCH_ENDPOINT = var.opensearch_endpoint
+      OPENSEARCH_ENDPOINT = var.opensearch_endpoint != "" ? var.opensearch_endpoint : "NOT_CONFIGURED"
       INDEX_NAME          = var.index_name
     }
   }
 }
 
 # DynamoDB Stream Trigger
+data "aws_dynamodb_table" "products" {
+  name = var.dynamodb_table_name
+}
+
 resource "aws_lambda_event_source_mapping" "ddb_trigger" {
-  event_source_arn  = aws_dynamodb_table.products.stream_arn
+  event_source_arn  = data.aws_dynamodb_table.products.stream_arn
   function_name     = aws_lambda_function.ddb_to_opensearch.arn
   starting_position = "LATEST"
   batch_size        = 100
