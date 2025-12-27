@@ -37,7 +37,9 @@ resource "aws_lb_target_group" "backend_tg" {
   vpc_id   = var.vpc_id
 
   health_check {
-    path                = "/api/health"  # You MUST create this route in Express!
+    path                = "/api/health"  
+    port                = "5000"
+    protocol            = "HTTP"
     matcher             = "200"
     interval            = 30
     timeout             = 5
