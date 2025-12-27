@@ -25,6 +25,7 @@ app.get('/api/health', (req, res) => {
 
 app.use("/api/products", products);
 app.use("/api/search", searchRoutes);
+
 app.listen(5000, "0.0.0.0", () => {
   console.log("Server running on 5000");
 });
