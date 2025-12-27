@@ -5,6 +5,7 @@ const axios = require("axios");
 const mongoose = require('mongoose');
 const orderRoutes = require("./routes/order.routes.js");
 const products = require("./routes/product.routes.js");
+const searchRoutes = require("./routes/search.routes.js");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,7 +24,9 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use("/api/products", products);
-
+app.use("/search", searchRoutes);
 app.listen(5000, "0.0.0.0", () => {
   console.log("Server running on 5000");
 });
+
+
