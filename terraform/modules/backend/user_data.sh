@@ -27,10 +27,10 @@ yum install -y awscli
 ############################################
 # 4. Install SSM Agent (fix OFFLINE status)
 ############################################
-yum install -y https://s3.ap-south-1.amazonaws.com/amazon-ssm-ap-south-1/latest/linux_amd64/amazon-ssm-agent.rpm || true
+dnf install -y amazon-ssm-agent || yum install -y amazon-ssm-agent
 systemctl enable amazon-ssm-agent
 systemctl start amazon-ssm-agent
-
+systemctl status amazon-ssm-agent
 ############################################
 # 5. Login to ECR (uses EC2 IAM role)
 ############################################

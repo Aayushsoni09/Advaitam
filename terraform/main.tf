@@ -61,7 +61,7 @@ module "backend" {
   subnet_id             = data.aws_subnets.vpc_subnets.ids[0]
   account_id = var.account_id
   dynamodb_table_name = "Products"   # Existing table in console
-  opensearch_endpoint = ""           # If not configured yet
+  opensearch_endpoint = "https://vpc-advaitam-search-czegk7nq2nglhlb4hvgcvbawhe.ap-south-1.es.amazonaws.com"        
   index_name          = "products-index"
 }
 # DATA MODULE (Redis + OpenSearch)
