@@ -7,7 +7,6 @@ const orderRoutes = require("./routes/order.routes.js");
 const products = require("./routes/product.routes.js");
 
 const app = express();
-const API = "https://api.escuelajs.co/api/v1";
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
@@ -23,12 +22,7 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Backend is running smoothly' });
 });
 
-app.get("/api/products", async (req, res) => {
-  const { data } = await axios.get(`${API}/products`);
-  res.json(data);
-});
-
-app.use("/products", products);
+app.use("/api/products", products);
 
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
