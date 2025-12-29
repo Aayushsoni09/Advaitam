@@ -7,6 +7,11 @@ WORKDIR /app
 # ---- Install dependencies first (layer caching) ----
 COPY package*.json ./
 RUN npm ci --only=production
+RUN npm install \
+    @opensearch-project/opensearch \
+    @aws-sdk/credential-provider-node
+
+
 
 # ---- Copy source code ----
 COPY . .

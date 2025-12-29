@@ -1,35 +1,45 @@
-const express = require("express");
-const router = express.Router();
-const { Client } = require("@opensearch-project/opensearch");
+import { Router } from "express";
+import { Client } from "@opensearch-project/opensearch";
+import { defaultProvider } from "@aws-sdk/credential-provider-node";
+import createAwsConnection from "@opensearch-project/opensearch/aws";
 
-const client = new Client({ node: process.env.OPENSEARCH_ENDPOINT });
-const INDEX = process.env.INDEX_NAME || "products-index";
+const router = Router();
 
-router.get("/", async (req, res) => {
+const awsConfig = {
+  region: process.env.AWS_REGION,
+  credentials: defaultProvider(), // <-- this pulls from EC2 IAM metadata
+};
+
+const { Connection, Transport } = createAwsConnection(awsConfig);
+
+const client = new Client({
+  ...Connection,
+  ...Transport,
+  node: process.env.OPENSEARCH_ENDPOINT, // VPC endpoint
+});
+
+router.get("/api/search", async (req, res) => {
   const q = req.query.q;
-
-  if (!q) return res.status(400).json({ error: "Missing ?q= keyword" });
+  if (!q) return res.status(400).json({ error: "Missing query" });
 
   try {
-    const response = await client.search({
-      index: INDEX,
+    const result = await client.search({
+      index: process.env.INDEX_NAME || "products",
       body: {
         query: {
           multi_match: {
             query: q,
-            fields: ["title^4", "category^2", "subCategory", "gender"]
+            fields: ["title", "category", "subCategory", "gender"]
           }
         }
       }
     });
 
-    const results = response.hits.hits.map(h => h._source);
-    res.json(results);
-
+    res.json(result.hits.hits.map(hit => hit._source));
   } catch (err) {
-    console.error("Search error:", err);
-    res.status(500).json({ error: "SEARCH_ERROR" });
+    console.error("SEARCH ERROR:", err);
+    res.status(500).json({ error: "SEARCH_ERROR", detail: err.message });
   }
 });
 
-module.exports = router;
+export default router;
